@@ -1,6 +1,38 @@
 #include <unistd.h>
 #include "prototypes.h"
 
+#ifndef USE_UNICODE
+char *pieces[] = {
+	"P",
+	"R",
+	"H",
+	"B",
+	"Q",
+	"K",
+	"P",
+	"R",
+	"H",
+	"B",
+	"Q",
+	"K"
+};
+#else
+char *pieces[] = {
+	"♙",
+	"♖",
+	"♘",
+	"♗",
+	"♕",
+	"♔",
+	"♟︎",
+	"♜",
+	"♞",
+	"♝",
+	"♛",
+	"♚"
+};
+#endif
+
 /*
 ** 1 = Pawn, 2 = Rook, 3 = Horse/knight, 4 = Bishop, 5 = Queen, 6 = King
 */
@@ -8,22 +40,19 @@ void	draw_piece(t_square square)
 {
 	if (square.piece == 0)
 		return ;
+#ifndef USE_UNICODE
+	// unicode unsupported: render piece color depending on owner
 	if (square.owner == 1)
-		ft_putstr("\033[35mW");
+		ft_putstr("\033[34m");
 	else if (square.owner == 2)
-		ft_putstr("\033[30mB");
-	if (square.piece == 1)
-		write(1, "P", 1);
-	else if (square.piece == 2)
-		write(1, "R", 1);
-	else if (square.piece == 3)
-		write(1, "H", 1);
-	else if (square.piece == 4)
-		write(1, "B", 1);
-	else if (square.piece == 5)
-		write(1, "Q", 1);
-	else if (square.piece == 6)
-		write(1, "K", 1);
+		ft_putstr("\033[30m");
+#else
+	// unicode supported: render everything as black
+	ft_putstr("\033[30m");
+#endif
+	ft_putstr(" ");
+	ft_putstr(pieces[(square.piece - 1) + (square.owner - 1) * 6]);
+	ft_putstr(" ");
 }
 
 void	draw_board(t_square **board)
@@ -32,8 +61,8 @@ void	draw_board(t_square **board)
 	int j;
 
 	i = 0;
-	ft_putstr("  A B C D E F G H\n");
-	ft_putstr(" ┌────────────────┐\n");
+	ft_putstr("   A  B  C  D  E  F  G  H\n");
+	ft_putstr(" ┌────────────────────────┐\n");
 	while (i < 8)
 	{
 		ft_putint(8 - i);
@@ -42,11 +71,11 @@ void	draw_board(t_square **board)
 		while (j < 8)
 		{
 			if (board[i][j].color == 1)
-				ft_putstr("\033[42m");
+				ft_putstr("\033[42m\033[1m");
 			else
-				ft_putstr("\033[47m");
+				ft_putstr("\033[47m\033[1m");
 			if (board[i][j].owner == 0)
-				write(1, "  ", 2);
+				ft_putstr("   ");
 			else
 				draw_piece(board[i][j]);
 			ft_putstr("\033[0m");
@@ -57,8 +86,8 @@ void	draw_board(t_square **board)
 		write(1, "\n", 1);
 		i++;
 	}
-	ft_putstr(" └────────────────┘\n");
-	ft_putstr("  A B C D E F G H\n");
+	ft_putstr(" └────────────────────────┘\n");
+	ft_putstr("   A  B  C  D  E  F  G  H\n");
 }
 
 void	erase_board(void)
