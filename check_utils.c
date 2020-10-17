@@ -13,3 +13,10 @@ int	is_num(char c)
 		return (1);
 	return (0);
 }
+
+int	ft_abs(int num)
+{
+	if (num < 0)
+		return (-num);
+	return (num);
+}
